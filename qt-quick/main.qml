@@ -7,7 +7,7 @@ import Model 1.0 // https://stackoverflow.com/questions/57742024/custom-object-r
 
 Window {
     id: root
-    width: 800
+    width: 1000
     height: 600
     visible:  true
 
@@ -22,6 +22,8 @@ Window {
         GridLayout {
             columns: 4
             anchors.fill: parent
+
+            anchors.margins: 30
 
 
             Text {}
