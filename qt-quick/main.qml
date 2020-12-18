@@ -5,7 +5,6 @@ import QtQuick.Layouts 1.15
 import Model 1.0 // https://stackoverflow.com/questions/57742024/custom-object-referencing-in-qml-python
 
 
-
 Window {
     id: root
     width: 800
@@ -45,7 +44,9 @@ Window {
 
             Row {
                 Layout.alignment: Qt.AlignCenter
+                Layout.preferredWidth: 350
                 spacing: 5
+
                 Repeater {
                     model: mainModel.player_cards
 
@@ -60,6 +61,7 @@ Window {
             Row {
                 Layout.alignment: Qt.AlignCenter
                 spacing: 5
+
                 Repeater {
                     model: mainModel.player_values
                     ValueLabel {
@@ -78,7 +80,9 @@ Window {
 
             Row {
                 Layout.alignment: Qt.AlignCenter
+                Layout.preferredWidth: 350
                 spacing: 5
+
                 Repeater {
                     model: mainModel.casino_cards
 
