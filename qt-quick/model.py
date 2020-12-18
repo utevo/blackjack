@@ -90,6 +90,73 @@ class Model(QObject):
         self._add_card_for_player()
         self._add_card_for_casino()
 
+    @Slot()
+    def hit(self):
+        self.set_player_turn(False)
+        self._add_card_for_player()
+
+        if min(cards_values(self._player_cards)) > BUSTS:
+            self._casino_win()
+            self._init_new_hand()
+
+        self.set_player_turn(True)
+
+    @Slot()
+    def stand(self):
+        self.set_player_turn(False)
+
+        self._casino_play()
+        self._choose_winner()
+        self._init_new_hand()
+
+        self.set_player_turn(True)
+
+    def _casino_play(self):
+        while 0 < best_value(cards_values(self._casino_cards)) < CASINO_STOP:
+            self._add_card_for_casino()
+            self._delay(SLEEP_SEC)
+
+    def _choose_winner(self) -> None:
+        player_win = min(cards_values(self._casino_cards)) > BUSTS or best_value(
+            cards_values(self._player_cards)) > best_value(cards_values(self._casino_cards))
+        casino_win = min(cards_values(self._player_cards)) > BUSTS or best_value(
+            cards_values(self._player_cards)) < best_value(cards_values(self._casino_cards))
+
+        if player_win:
+            self._player_win()
+        elif casino_win:
+            self._casino_win()
+        else:
+            self._player_casino_draw()
+
+    def _player_win(self):
+        self.set_player_points(self._player_points + 1)
+
+        self.set_message(WIN_MESSAGE)
+        print(self._state())
+
+        self._delay(SLEEP_SEC)
+
+        self.set_message('')
+
+    def _casino_win(self):
+        self.set_casino_points(self._casino_points + 1)
+
+        self.set_message(LOSE_MESSAGE)
+        print(self._state())
+
+        self._delay(SLEEP_SEC)
+
+        self.set_message('')
+
+    def _player_casino_draw(self):
+        self.set_message(DRAW_MESSAGE)
+        print(self._state())
+
+        self._delay(SLEEP_SEC)
+
+        self.set_message('')
+
     def _add_card_for_player(self) -> None:
         self._player_cards.append(self._curr_deck.pop())
         self.player_cards_changed.emit()
@@ -166,73 +233,6 @@ class Model(QObject):
                              notify=casino_values_changed)
 
     message = Property(str, read_message, notify=message_changed)
-
-    @Slot()
-    def hit(self):
-        self.set_player_turn(False)
-        self._add_card_for_player()
-
-        if min(cards_values(self._player_cards)) > BUSTS:
-            self._casino_win()
-            self._init_new_hand()
-
-        self.set_player_turn(True)
-
-    @Slot()
-    def stand(self):
-        self.set_player_turn(False)
-
-        self._casino_play()
-        self._choose_winner()
-        self._init_new_hand()
-
-        self.set_player_turn(True)
-
-    def _casino_play(self):
-        while 0 < best_value(cards_values(self._casino_cards)) < CASINO_STOP:
-            self._add_card_for_casino()
-            self._delay(SLEEP_SEC)
-
-    def _choose_winner(self) -> None:
-        player_win = min(cards_values(self._casino_cards)) > BUSTS or best_value(
-            cards_values(self._player_cards)) > best_value(cards_values(self._casino_cards))
-        casino_win = min(cards_values(self._player_cards)) > BUSTS or best_value(
-            cards_values(self._player_cards)) < best_value(cards_values(self._casino_cards))
-
-        if player_win:
-            self._player_win()
-        elif casino_win:
-            self._casino_win()
-        else:
-            self._player_casino_draw()
-
-    def _player_win(self):
-        self.set_player_points(self._player_points + 1)
-
-        self.set_message(WIN_MESSAGE)
-        print(self._state())
-
-        self._delay(SLEEP_SEC)
-
-        self.set_message('')
-
-    def _casino_win(self):
-        self.set_casino_points(self._casino_points + 1)
-
-        self.set_message(LOSE_MESSAGE)
-        print(self._state())
-
-        self._delay(SLEEP_SEC)
-
-        self.set_message('')
-
-    def _player_casino_draw(self):
-        self.set_message(DRAW_MESSAGE)
-        print(self._state())
-
-        self._delay(SLEEP_SEC)
-
-        self.set_message('')
 
     def _state(self) -> str:
         return f'''Points: {self._player_points} vs {self._casino_points}

@@ -61,7 +61,7 @@ class Window(QMainWindow):
     def __init__(self):
         super(Window, self).__init__()
         self.load_ui()
-        self.setFixedSize(800, 480)
+        self.setMinimumSize(800, 420)
 
         self.model = Model()
         self.ui.hitButton.clicked.connect(self.model.hit)
@@ -75,9 +75,9 @@ class Window(QMainWindow):
 
 
 
-        player_cards_manager = CardDeckManager(layout=self.ui.playerCardsLayout,
+        CardDeckManager(layout=self.ui.playerCardsLayout,
                                        read_cards=self.model.read_player_cards, notify=self.model.player_cards_changed)
-        casino_cards_manger = CardDeckManager(layout=self.ui.casinoCardsLayout,
+        CardDeckManager(layout=self.ui.casinoCardsLayout,
                                        read_cards=self.model.read_casino_cards, notify=self.model.casino_cards_changed)
 
         self.model.start()
