@@ -57,8 +57,8 @@ class Model(QObject):
     player_points_changed = Signal(int)
     casino_points_changed = Signal(int)
 
-    player_cards_changed = Signal(list)
-    casino_cards_changed = Signal(list)
+    player_cards_changed = Signal()
+    casino_cards_changed = Signal()
 
     player_values_changed = Signal(str)
     casino_values_changed = Signal(str)
@@ -67,6 +67,11 @@ class Model(QObject):
 
     def __init__(self):
         super().__init__()
+
+        self._player_cards = []
+        self._casino_cards = []
+        self._player_points = 0
+        self._casino_points = 0
 
     def start(self):
         self.set_player_points(0)
@@ -89,12 +94,12 @@ class Model(QObject):
 
     def _add_card_for_player(self) -> None:
         self._player_cards.append(self._curr_deck.pop())
-        self.player_cards_changed.emit(self._player_cards)
+        self.player_cards_changed.emit()
         self.player_values_changed.emit(str(cards_values(self._player_cards)))
 
     def _add_card_for_casino(self) -> None:
         self._casino_cards.append(self._curr_deck.pop())
-        self.casino_cards_changed.emit(self._casino_cards)
+        self.casino_cards_changed.emit()
         self.casino_values_changed.emit(str(cards_values(self._casino_cards)))
 
     def set_player_points(self, points: int) -> None:
@@ -116,14 +121,14 @@ class Model(QObject):
 
     def set_player_cards(self, player_cards: List[Card]) -> None:
         self._player_cards = player_cards
-        self.player_cards_changed.emit(player_cards)
+        self.player_cards_changed.emit()
 
     def read_casino_cards(self) -> List[Card]:
         return self._casino_cards
 
     def set_casino_cards(self, casino_cards: List[Card]) -> None:
         self._casino_cards = casino_cards
-        self.casino_cards_changed.emit(casino_cards)
+        self.casino_cards_changed.emit()
 
     def read_player_turn(self) -> bool:
         return self._player_turn
